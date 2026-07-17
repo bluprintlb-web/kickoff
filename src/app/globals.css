@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-surface-brand-foreground: var(--surface-brand-foreground);
+  --color-surface-brand: var(--surface-brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand: var(--brand);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* "Light Steel" palette (2026-07-16, at user's request) — nine oklch steps
+   converted directly from the exact hex values given (Bright Snow #f8f9fa
+   through Shadow Grey #212529; this is Bootstrap's gray-100..900 ramp).
+   Fully monochrome by request: the old gold --accent and green --brand
+   tokens are gone, replaced by steps from this same ramp, reused across
+   both light and dark mode rather than inventing new hues. --destructive
+   is the one deliberate exception — kept as red since it's a functional
+   safety signal (delete/error states), not brand decoration. */
+:root {
+  --background: oklch(0.982 0.002 247.8); /* Bright Snow */
+  --foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.262 0.009 248.2);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.262 0.009 248.2);
+  --primary: oklch(0.345 0.013 248.2); /* Gunmetal */
+  --primary-foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
+  /* Deliberately defined only in :root, not .dark — this is the brand bar
+     (header/footer/hero), which stays constant across light and dark mode
+     rather than flipping like --primary does (--primary flips to a light
+     neutral in dark mode so admin's default buttons stay visible on a
+     near-black page; reusing it for the storefront's brand bar would make
+     the header go light in dark mode, which is wrong). */
+  --surface-brand: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --surface-brand-foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
+  --secondary: oklch(0.911 0.007 247.9); /* Alabaster Grey */
+  --secondary-foreground: oklch(0.262 0.009 248.2);
+  --muted: oklch(0.942 0.005 247.9); /* Platinum */
+  --muted-foreground: oklch(0.558 0.016 244.9); /* Slate Grey */
+  --accent: oklch(0.769 0.015 248); /* Pale Slate (darker) */
+  --accent-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --brand: oklch(0.428 0.015 248.2); /* Iron Grey */
+  --brand-foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.911 0.007 247.9); /* Alabaster Grey */
+  --input: oklch(0.911 0.007 247.9);
+  --ring: oklch(0.428 0.015 248.2); /* Iron Grey */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.982 0.002 247.8); /* Bright Snow */
+  --sidebar-foreground: oklch(0.262 0.009 248.2);
+  --sidebar-primary: oklch(0.345 0.013 248.2); /* Gunmetal */
+  --sidebar-primary-foreground: oklch(0.982 0.002 247.8);
+  --sidebar-accent: oklch(0.911 0.007 247.9); /* Alabaster Grey */
+  --sidebar-accent-foreground: oklch(0.262 0.009 248.2);
+  --sidebar-border: oklch(0.911 0.007 247.9);
+  --sidebar-ring: oklch(0.428 0.015 248.2);
+}
+
+.dark {
+  --background: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
+  --card: oklch(0.345 0.013 248.2); /* Gunmetal */
+  --card-foreground: oklch(0.982 0.002 247.8);
+  --popover: oklch(0.345 0.013 248.2);
+  --popover-foreground: oklch(0.982 0.002 247.8);
+  --primary: oklch(0.942 0.005 247.9); /* Platinum */
+  --primary-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --secondary: oklch(0.428 0.015 248.2); /* Iron Grey */
+  --secondary-foreground: oklch(0.982 0.002 247.8);
+  --muted: oklch(0.428 0.015 248.2); /* Iron Grey */
+  --muted-foreground: oklch(0.769 0.015 248); /* Pale Slate (darker) */
+  --accent: oklch(0.769 0.015 248); /* Pale Slate (darker) — same as light */
+  --accent-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --brand: oklch(0.867 0.011 247.9); /* Pale Slate (lighter) */
+  --brand-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.428 0.015 248.2); /* Iron Grey */
+  --input: oklch(0.428 0.015 248.2);
+  --ring: oklch(0.769 0.015 248); /* Pale Slate (darker) */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.345 0.013 248.2); /* Gunmetal */
+  --sidebar-foreground: oklch(0.982 0.002 247.8);
+  --sidebar-primary: oklch(0.942 0.005 247.9); /* Platinum */
+  --sidebar-primary-foreground: oklch(0.262 0.009 248.2);
+  --sidebar-accent: oklch(0.428 0.015 248.2); /* Iron Grey */
+  --sidebar-accent-foreground: oklch(0.982 0.002 247.8);
+  --sidebar-border: oklch(0.428 0.015 248.2);
+  --sidebar-ring: oklch(0.769 0.015 248);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

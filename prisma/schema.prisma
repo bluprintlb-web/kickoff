@@ -1,0 +1,230 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Auth (Auth.js / NextAuth Prisma adapter schema) ---
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+// Only one User may hold role = ADMIN at a time -- enforced by a partial
+// unique index (not expressible here in schema.prisma), see
+// prisma/migrations/20260709230430_single_admin_constraint.
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String? // hashed with bcryptjs; null for OAuth-only accounts
+  role          Role      @default(CUSTOMER)
+
+  accounts Account[]
+  sessions Session[]
+  orders   Order[]
+  cart     Cart?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- Catalog ---
+
+enum ProductCategory {
+  JERSEY
+  TROPHY
+  BALL
+  GLOVES
+  BODYWEAR
+  SHIN_PADS
+  SOCKS
+}
+
+// Determines which size list applies to this product's variants — see
+// src/lib/sizes.ts. Only meaningful for apparel-style categories (jerseys,
+// bodywear); leave unset for balls/trophies/gloves/etc, which don't use the
+// kids/mens size ladders.
+enum AgeGroup {
+  KIDS
+  ADULT
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String
+  // Arabic display name. Optional — falls back to `name` when unset. See
+  // src/lib/i18n/product-name.ts for the single place this fallback happens.
+  nameAr      String?
+  slug        String          @unique
+  description String?         @db.Text
+  category    ProductCategory
+  ageGroup    AgeGroup?
+  // What the store paid to acquire the item. Never sent to the storefront,
+  // and only exposed in the admin UI after a PIN check — see
+  // productRouter.revealCostPrice/revealAllCostPrices in
+  // src/server/routers/product.ts. Excluded from every other Product query
+  // via Prisma's `omit`, not just left off the client-side render, so it
+  // never even hits the network before the PIN is verified.
+  costPrice   Decimal?        @db.Decimal(10, 2)
+  basePrice   Decimal         @db.Decimal(10, 2)
+  // Optional discounted price. When set (and lower than basePrice), this is
+  // what's actually charged — see src/lib/pricing.ts.
+  salePrice   Decimal?        @db.Decimal(10, 2)
+  images      String[]
+  isActive    Boolean         @default(true)
+
+  variants ProductVariant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductVariant {
+  id            String   @id @default(cuid())
+  productId     String
+  sku           String   @unique
+  size          String? // from src/lib/sizes.ts when Product.ageGroup is set, free text otherwise
+  color         String?
+  barcode       String?  @unique // scanned in via the admin "scan to add product" flow
+  stock         Int      @default(0)
+  priceOverride Decimal? @db.Decimal(10, 2) // overrides Product.basePrice when set
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Cart ---
+
+model Cart {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  cartId    String
+  variantId String
+  quantity  Int    @default(1)
+
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantId])
+}
+
+// --- Orders ---
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// ONLINE orders come through the storefront checkout (Cart -> Order).
+// IN_STORE orders come from the admin "scan to sell" POS flow and skip
+// shipping/cart entirely.
+enum OrderChannel {
+  ONLINE
+  IN_STORE
+}
+
+enum PaymentMethod {
+  WHISH
+  CARD
+  CASH
+}
+
+model Order {
+  id          String        @id @default(cuid())
+  userId      String? // null for walk-in POS sales with no account
+  channel     OrderChannel  @default(ONLINE)
+  status      OrderStatus   @default(PENDING)
+  total       Decimal       @db.Decimal(10, 2)
+  paymentMethod PaymentMethod?
+
+  // Only set for ONLINE orders — POS sales don't ship.
+  shippingName       String?
+  shippingAddress    String?
+  shippingCity       String?
+  shippingPostalCode String?
+  shippingCountry    String?
+
+  // Opaque reference from whichever PaymentMethod was used (Whish collect
+  // ID, card processor transaction ID, ...). See src/lib/payments.
+  paymentReference String?
+
+  user  User?       @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  variantId String
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+}
