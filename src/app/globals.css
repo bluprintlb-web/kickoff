@@ -152,3 +152,9 @@
     @apply font-sans;
   }
 }
+
+/* See SPLASH_INIT_SCRIPT in src/app/layout.tsx — set beforeInteractive,
+   before hydration, so this never flashes visible-then-hidden. */
+html[data-hide-splash="1"] #app-splash {
+  display: none;
+}
