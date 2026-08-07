@@ -178,6 +178,7 @@ const en = {
     pendingNotice:
       "We're waiting for payment confirmation from Whish — this page will reflect the final status once that comes through.",
     cashPendingNotice: "Pay in cash when your order is delivered.",
+    itemUnavailable: "Item no longer available",
   },
   profile: {
     title: "Profile",
@@ -396,6 +397,7 @@ const ar: typeof en = {
     pendingNotice:
       "ننتظر تأكيد الدفع من Whish — ستُحدَّث هذه الصفحة بالحالة النهائية فور وصوله.",
     cashPendingNotice: "ادفع نقدًا عند استلام طلبك.",
+    itemUnavailable: "هذا المنتج لم يعد متوفرًا",
   },
   profile: {
     title: "الملف الشخصي",

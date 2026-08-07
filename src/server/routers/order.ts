@@ -200,6 +200,13 @@ export const orderRouter = router({
         await ctx.prisma.$transaction(async (tx) => {
           const items = await tx.orderItem.findMany({ where: { orderId: order.id } });
           for (const item of items) {
+            // variantId is nullable at the schema level (a variant can be
+            // hard-deleted later, see the model comment on OrderItem), but
+            // in practice can't be null here — this order and its items
+            // were just created moments ago in this same request. Skip
+            // defensively rather than assert non-null: nothing to restore
+            // stock to if the variant is somehow already gone.
+            if (!item.variantId) continue;
             await tx.productVariant.update({
               where: { id: item.variantId },
               data: { stock: { increment: item.quantity } },

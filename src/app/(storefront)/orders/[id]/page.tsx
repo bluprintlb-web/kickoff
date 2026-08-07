@@ -66,8 +66,15 @@ export default async function OrderPage({
           {order.items.map((item) => (
             <div key={item.id} className="flex items-center justify-between px-6 py-3">
               <span className="text-sm">
-                {productName(item.variant.product, locale)}
-                {item.variant.size ? ` (${item.variant.size})` : ""} × {item.quantity}
+                {item.variant ? (
+                  <>
+                    {productName(item.variant.product, locale)}
+                    {item.variant.size ? ` (${item.variant.size})` : ""}
+                  </>
+                ) : (
+                  dict.itemUnavailable
+                )}{" "}
+                × {item.quantity}
               </span>
               <span className="text-sm font-medium">
                 ${(Number(item.unitPrice) * item.quantity).toFixed(2)}
