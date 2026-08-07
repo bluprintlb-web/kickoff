@@ -11,7 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-export function PwaRegister() {
+export function PwaRegister({ className }: { className?: string }) {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(
     null
   );
@@ -41,7 +41,7 @@ export function PwaRegister() {
       type="button"
       variant="outline"
       size="sm"
-      className="w-full"
+      className={className}
       onClick={async () => {
         await installPrompt.prompt();
         setInstallPrompt(null);

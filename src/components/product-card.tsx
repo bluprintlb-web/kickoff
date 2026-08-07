@@ -41,8 +41,11 @@ export function ProductCard({
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: "both" }}
     >
       <Card className="h-full gap-0 py-0 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:ring-1 hover:ring-accent/40">
-        <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-accent/20 via-accent/5 to-brand/10">
-          <Icon className="size-14 text-muted-foreground" strokeWidth={1.25} />
+        <div className="flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br from-accent/20 via-accent/5 to-brand/10">
+          <Icon
+            className="size-14 text-muted-foreground transition-transform duration-300 group-hover/card:scale-110"
+            strokeWidth={1.25}
+          />
         </div>
         <CardContent className="flex flex-col gap-1.5 pt-3 pb-4">
           <span className="w-fit rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium tracking-wide text-accent-foreground uppercase">

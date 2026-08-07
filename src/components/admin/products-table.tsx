@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -71,33 +70,11 @@ function totalStock(product: AdminProduct) {
   return product.variants.reduce((sum, v) => sum + v.stock, 0);
 }
 
-// Small outline badge + colored dot — quieter than a solid fill, keeps color
-// reserved for genuine status meaning instead of decoration.
-function DotBadge({
-  tone,
-  children,
-}: {
-  tone: "destructive" | "warning" | "brand" | "muted";
-  children: ReactNode;
-}) {
-  const dotClass = {
-    destructive: "bg-destructive",
-    warning: "bg-amber-500",
-    brand: "bg-brand",
-    muted: "bg-muted-foreground",
-  }[tone];
-  return (
-    <Badge variant="outline" className="gap-1.5 font-normal">
-      <span className={cn("size-1.5 shrink-0 rounded-full", dotClass)} />
-      {children}
-    </Badge>
-  );
-}
-
+// Solid colored status pills, matching alexph.one's inventory table.
 function StockBadge({ stock }: { stock: number }) {
-  if (stock === 0) return <DotBadge tone="destructive">Out of stock</DotBadge>;
-  if (stock <= 5) return <DotBadge tone="warning">Low stock</DotBadge>;
-  return <DotBadge tone="brand">In stock</DotBadge>;
+  if (stock === 0) return <Badge variant="solid-destructive">Out of stock</Badge>;
+  if (stock <= 5) return <Badge variant="solid-warning">Low stock</Badge>;
+  return <Badge variant="solid-success">In stock</Badge>;
 }
 
 export function AdminProductsTable({ products }: { products: AdminProduct[] }) {
@@ -263,7 +240,10 @@ export function AdminProductsTable({ products }: { products: AdminProduct[] }) {
               return (
                 <TableRow
                   key={product.id}
-                  className={cn(!product.isActive && "opacity-50")}
+                  className={cn(
+                    "transition-colors hover:bg-muted/40",
+                    !product.isActive && "opacity-50"
+                  )}
                 >
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
@@ -304,48 +284,49 @@ export function AdminProductsTable({ products }: { products: AdminProduct[] }) {
                     {product.isActive ? (
                       <StockBadge stock={stock} />
                     ) : (
-                      <DotBadge tone="muted">Archived</DotBadge>
+                      <Badge variant="secondary">Archived</Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     {barcodeVariant?.barcode ? (
-                      <Barcode value={barcodeVariant.barcode} className="h-8" />
+                      <Barcode value={barcodeVariant.barcode} className="h-10" />
                     ) : (
                       <span className="text-xs text-muted-foreground">No barcode</span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <Link
                         href={
                           soleVariant
                             ? `/admin/pos?variantId=${soleVariant.id}`
                             : "/admin/pos"
                         }
-                        title="Sell"
                       >
-                        <Button type="button" variant="ghost" size="sm">
-                          <ShoppingBag className="size-4" />
+                        <Button type="button" variant="sale" size="sm">
+                          <ShoppingBag className="size-3.5" />
+                          Sale
                         </Button>
                       </Link>
-                      <Link href={`/admin/products/${product.id}/edit`} title="Edit">
-                        <Button type="button" variant="ghost" size="sm">
-                          <Pencil className="size-4" />
+                      <Link href={`/admin/products/${product.id}/edit`}>
+                        <Button type="button" variant="edit" size="sm">
+                          <Pencil className="size-3.5" />
+                          Edit
                         </Button>
                       </Link>
                       <Button
                         type="button"
-                        variant="ghost"
+                        variant={product.isActive ? "solid-destructive" : "solid-success"}
                         size="sm"
-                        title={product.isActive ? "Archive" : "Restore"}
                         onClick={() => toggleArchive(product)}
                         disabled={setActive.isPending}
                       >
                         {product.isActive ? (
-                          <Archive className="size-4 text-destructive" />
+                          <Archive className="size-3.5" />
                         ) : (
-                          <ArchiveRestore className="size-4 text-brand" />
+                          <ArchiveRestore className="size-3.5" />
                         )}
+                        {product.isActive ? "Archive" : "Restore"}
                       </Button>
                     </div>
                   </TableCell>

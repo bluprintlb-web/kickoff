@@ -27,7 +27,7 @@ export async function SiteFooter() {
               <Link
                 key={category}
                 href={`/products?category=${category}`}
-                className="w-fit text-sm text-surface-brand-foreground/60 transition-colors hover:text-accent"
+                className="hover-underline w-fit text-sm text-surface-brand-foreground/60 transition-colors hover:text-accent"
               >
                 {dict.categories[category]}
               </Link>
@@ -48,7 +48,7 @@ export async function SiteFooter() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-surface-brand-foreground/50">
-          © {new Date().getFullYear()} Leader Sport. {dict.footer.rights}
+          © {new Date().getFullYear()} Kick Off. {dict.footer.rights}
         </p>
       </div>
     </footer>

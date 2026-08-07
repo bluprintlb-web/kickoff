@@ -26,7 +26,13 @@ export default async function OrderPage({
   const [trpc, locale] = await Promise.all([trpcCaller(), getLocale()]);
   const order = await trpc.order.byId({ id });
   const dict = dictionaries[locale].orderConfirmation;
+  const checkoutDict = dictionaries[locale].checkout;
   const total = Number(order.total);
+  const paymentMethodLabel: Record<string, string> = {
+    WHISH: checkoutDict.whish,
+    CARD: checkoutDict.card,
+    CASH: checkoutDict.cashOnDelivery,
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-16">
@@ -49,7 +55,11 @@ export default async function OrderPage({
           <span className="text-sm text-muted-foreground">
             {dict.paymentMethod}
           </span>
-          <span className="font-medium">{order.paymentMethod}</span>
+          <span className="font-medium">
+            {order.paymentMethod
+              ? (paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod)
+              : "—"}
+          </span>
         </div>
 
         <div className="flex flex-col divide-y">
@@ -68,7 +78,7 @@ export default async function OrderPage({
 
         <div className="flex items-center justify-between px-6 py-4">
           <span className="text-lg font-semibold">{dict.total}</span>
-          <div className="text-right">
+          <div className="text-end">
             <p className="text-lg font-semibold text-brand">
               ${total.toFixed(2)}
             </p>
@@ -79,7 +89,7 @@ export default async function OrderPage({
 
       {order.status === "PENDING" && (
         <p className="text-center text-sm text-muted-foreground">
-          {dict.pendingNotice}
+          {order.paymentMethod === "CASH" ? dict.cashPendingNotice : dict.pendingNotice}
         </p>
       )}
     </div>

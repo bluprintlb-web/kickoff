@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Separate Node/Express project (its own package.json, own deps) —
+    // not part of the Next.js app, and Next's react-hooks rule false-
+    // positives on Baileys' `use*`-prefixed function names there anyway.
+    "whatsapp-notifier/**",
   ]),
 ]);
 

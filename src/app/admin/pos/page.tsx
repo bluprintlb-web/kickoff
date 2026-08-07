@@ -214,10 +214,10 @@ export default function PosPage() {
                 type="button"
                 onClick={() => setPaymentMethod(method)}
                 className={cn(
-                  "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                  "rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200",
                   paymentMethod === method
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground"
+                    : "border-border text-muted-foreground hover:scale-105 hover:text-foreground"
                 )}
               >
                 {method}

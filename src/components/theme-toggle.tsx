@@ -4,6 +4,7 @@ import { Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
+import type { Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 
 // Keep in sync with the inline width below — used to compute the sliding
@@ -15,10 +16,12 @@ export function ThemeToggle({
   className,
   showLabel = false,
   labels = { light: "Light mode", dark: "Dark mode" },
+  locale = "en",
 }: {
   className?: string;
   showLabel?: boolean;
   labels?: { light: string; dark: string };
+  locale?: Locale;
 }) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
@@ -63,6 +66,9 @@ export function ThemeToggle({
   // Storefront header: both options always visible, like the EN/AR language
   // toggle right next to it — no icon/state to interpret, just pick one.
   const active = isDark ? "dark" : "light";
+  // Same reasoning as LanguageToggle's `sign` — translateX is physical, so
+  // sliding "toward the second option" needs to go negative in RTL.
+  const sign = locale === "ar" ? -1 : 1;
 
   return (
     <div
@@ -73,8 +79,8 @@ export function ThemeToggle({
     >
       <div
         aria-hidden
-        className="absolute top-0.5 bottom-0.5 left-0.5 rounded-full bg-white/15 transition-transform duration-300 ease-out"
-        style={{ width: OPTION_WIDTH, transform: `translateX(${active === "dark" ? OPTION_WIDTH : 0}px)` }}
+        className="absolute top-0.5 bottom-0.5 start-0.5 rounded-full bg-white/15 transition-transform duration-300 ease-out"
+        style={{ width: OPTION_WIDTH, transform: `translateX(${active === "dark" ? OPTION_WIDTH * sign : 0}px)` }}
       />
       <button
         type="button"
@@ -82,8 +88,10 @@ export function ThemeToggle({
         aria-pressed={active === "light"}
         style={{ width: OPTION_WIDTH }}
         className={cn(
-          "relative z-10 flex items-center justify-center gap-1.5 rounded-full py-1 text-xs font-semibold transition-opacity duration-200",
-          active === "light" ? "opacity-100" : "opacity-60 hover:opacity-90"
+          "relative z-10 flex items-center justify-center gap-1.5 rounded-full py-1 text-xs font-semibold transition-all duration-200",
+          active === "light"
+            ? "opacity-100"
+            : "opacity-60 hover:scale-105 hover:opacity-90"
         )}
       >
         <Sun className="size-3.5" />
@@ -95,8 +103,10 @@ export function ThemeToggle({
         aria-pressed={active === "dark"}
         style={{ width: OPTION_WIDTH }}
         className={cn(
-          "relative z-10 flex items-center justify-center gap-1.5 rounded-full py-1 text-xs font-semibold transition-opacity duration-200",
-          active === "dark" ? "opacity-100" : "opacity-60 hover:opacity-90"
+          "relative z-10 flex items-center justify-center gap-1.5 rounded-full py-1 text-xs font-semibold transition-all duration-200",
+          active === "dark"
+            ? "opacity-100"
+            : "opacity-60 hover:scale-105 hover:opacity-90"
         )}
       >
         <Moon className="size-3.5" />

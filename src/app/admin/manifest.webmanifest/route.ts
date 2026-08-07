@@ -7,9 +7,9 @@ import { NextResponse } from "next/server";
 export function GET() {
   return NextResponse.json({
     id: "/admin",
-    name: "Leader Sport Admin",
-    short_name: "LS Admin",
-    description: "Manage products, stock, and in-store sales for Leader Sport.",
+    name: "Kick Off Admin",
+    short_name: "Kick Off Admin",
+    description: "Manage products, stock, and in-store sales for Kick Off.",
     start_url: "/admin",
     scope: "/admin",
     display: "standalone",

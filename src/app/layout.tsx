@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Leader Sport",
+  title: "Kick Off",
   description: "Football kits, jerseys, trophies, and gear.",
 };
 
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 // flash of the wrong theme on load.
 const THEME_INIT_SCRIPT = `
   try {
-    var theme = localStorage.getItem('leader-sport-theme');
+    var theme = localStorage.getItem('kickoff-theme');
     var isAdmin = location.pathname.startsWith('/admin');
     var dark = theme === 'dark' || (theme === null && isAdmin);
     if (dark) document.documentElement.classList.add('dark');
@@ -94,22 +94,28 @@ export default async function RootLayout({
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-400"
         >
           <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-700">
-            <img
-              src="/logo-mark.png"
-              alt="Leader Sport"
-              className="w-[clamp(140px,16vw,220px)]"
-            />
+            <div
+              aria-label="Kick Off"
+              className="flex aspect-square w-[clamp(140px,16vw,220px)] items-center justify-center rounded-[2rem] bg-black p-[14%]"
+            >
+              <img
+                src="/brand/kickoff-icon.png"
+                alt=""
+                className="h-full w-full object-contain"
+              />
+            </div>
             <p className="relative mt-5 text-3xl font-bold tracking-[0.2em] text-slate-100 sm:text-4xl">
-              LEADER SPORT
+              KICK <span className="text-accent">OFF</span>
             </p>
             <p className="relative mt-1 text-[11px] tracking-[0.25em] text-slate-500 uppercase">
               {dict.hero.badge}
             </p>
-            <div className="relative mt-7 flex gap-2">
-              <span className="size-1.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.3s]" />
-              <span className="size-1.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.15s]" />
-              <span className="size-1.5 animate-bounce rounded-full bg-slate-500" />
-            </div>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-white/15">
+            <div
+              className="h-full bg-white"
+              style={{ animation: "kickoff-splash-loading 3000ms ease-out forwards" }}
+            />
           </div>
         </div>
         <TRPCProvider>

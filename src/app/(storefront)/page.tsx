@@ -1,4 +1,4 @@
-import { MapPin, ShieldCheck, Store } from "lucide-react";
+import { MapPin, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,6 @@ export default async function HomePage() {
       description: dict.trustStrip.basedDesc,
     },
     {
-      icon: Store,
-      title: dict.trustStrip.storeTitle,
-      description: dict.trustStrip.storeDesc,
-    },
-    {
       icon: ShieldCheck,
       title: dict.trustStrip.secureTitle,
       description: dict.trustStrip.secureDesc,
@@ -33,19 +28,19 @@ export default async function HomePage() {
 
   return (
     <div className="flex w-full flex-1 flex-col">
-      <section className="relative overflow-hidden border-b bg-surface-brand text-surface-brand-foreground dark:bg-[#fefae0] dark:text-[#212529]">
+      <section className="relative overflow-hidden border-b bg-surface-brand text-surface-brand-foreground">
         <div
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,color-mix(in_oklch,var(--accent),transparent_80%),transparent_60%)]"
         />
         <div className="animate-in fade-in slide-in-from-bottom-4 relative mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-24 duration-700 sm:py-28">
-          <span className="w-fit rounded-full bg-white/10 px-3 py-1 text-xs font-medium tracking-wide text-accent uppercase dark:bg-black/5 dark:text-accent-foreground">
+          <span className="w-fit rounded-full bg-white/10 px-3 py-1 text-xs font-medium tracking-wide text-accent uppercase">
             {dict.hero.badge}
           </span>
           <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
-            Leader <span className="text-accent dark:text-accent-foreground">Sport</span>
+            KICK <span className="text-accent">OFF</span>
           </h1>
-          <p className="max-w-xl text-lg text-surface-brand-foreground/70 dark:text-[#212529]/70">
+          <p className="max-w-xl text-lg text-surface-brand-foreground/70">
             {dict.hero.tagline}
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -62,7 +57,7 @@ export default async function HomePage() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-surface-brand-foreground/25 bg-transparent text-surface-brand-foreground hover:bg-white/10 hover:text-surface-brand-foreground dark:border-[#212529]/25 dark:text-[#212529] dark:hover:bg-black/5 dark:hover:text-[#212529]"
+                className="border-surface-brand-foreground/25 bg-transparent text-surface-brand-foreground transition-transform hover:scale-105 hover:bg-white/10 hover:text-surface-brand-foreground"
               >
                 {dict.hero.browseCategories}
               </Button>
@@ -72,7 +67,7 @@ export default async function HomePage() {
       </section>
 
       <section className="border-b bg-gradient-to-r from-accent/10 via-brand/5 to-accent/10">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-3">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-2">
           {TRUST_ITEMS.map(({ icon: Icon, title, description }) => (
             <div key={title} className="flex items-start gap-3">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent/20 text-accent-foreground">
@@ -105,7 +100,7 @@ export default async function HomePage() {
                 href={`/products?category=${category}`}
                 className="group flex flex-col items-center gap-3 rounded-xl border bg-gradient-to-br from-accent/10 to-brand/5 px-4 py-7 text-center transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg"
               >
-                <div className="flex size-12 items-center justify-center rounded-lg bg-accent/20 text-accent-foreground transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+                <div className="flex size-12 items-center justify-center rounded-lg bg-accent/20 text-accent-foreground transition-all duration-200 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-accent group-hover:text-accent-foreground">
                   <Icon className="size-6" />
                 </div>
                 <span className="text-sm font-medium">

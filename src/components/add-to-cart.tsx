@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { dispatchCartItemAdded } from "@/lib/cart-events";
 import { dictionaries, type Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/react";
@@ -29,7 +30,10 @@ export function AddToCart({
   );
 
   const addItem = trpc.cart.addItem.useMutation({
-    onSuccess: () => toast.success(dict.productDetail.addedToCart),
+    onSuccess: () => {
+      toast.success(dict.productDetail.addedToCart);
+      dispatchCartItemAdded();
+    },
     onError: (error) => {
       if (error.data?.code === "UNAUTHORIZED") {
         router.push("/login");
@@ -67,12 +71,12 @@ export function AddToCart({
                   disabled={outOfStock}
                   onClick={() => setVariantId(variant.id)}
                   className={cn(
-                    "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                    "rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200",
                     outOfStock
                       ? "cursor-not-allowed border-border text-muted-foreground/40 line-through"
                       : variantId === variant.id
                         ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border text-foreground hover:border-primary/50"
+                        : "border-border text-foreground hover:scale-105 hover:border-primary/50"
                   )}
                 >
                   {label}

@@ -1,8 +1,8 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
+import { ShoppingBag, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CART_ITEM_ADDED_EVENT } from "@/lib/cart-events";
 import { formatLBP } from "@/lib/currency";
 import { dictionaries, type Locale } from "@/lib/i18n/dictionaries";
 import { productName } from "@/lib/i18n/product-name";
@@ -31,9 +32,27 @@ export function CartMenu({
   const dict = dictionaries[locale].cartMenu;
   const logInLabel = dictionaries[locale].nav.logIn;
   const [open, setOpen] = useState(false);
+  // Bumped on every CART_ITEM_ADDED_EVENT and used as the falling bag's
+  // React key, so a second add while one animation is still playing remounts
+  // (restarts) it cleanly instead of the two overlapping oddly.
+  const [dropKey, setDropKey] = useState<number | null>(null);
   const { data: cart, isLoading } = trpc.cart.get.useQuery(undefined, {
     enabled: open && isLoggedIn,
   });
+
+  useEffect(() => {
+    function handleAdded() {
+      setDropKey((key) => (key ?? 0) + 1);
+    }
+    window.addEventListener(CART_ITEM_ADDED_EVENT, handleAdded);
+    return () => window.removeEventListener(CART_ITEM_ADDED_EVENT, handleAdded);
+  }, []);
+
+  useEffect(() => {
+    if (dropKey === null) return;
+    const timeout = window.setTimeout(() => setDropKey(null), 700);
+    return () => window.clearTimeout(timeout);
+  }, [dropKey]);
 
   const items = cart?.items ?? [];
   const count = cart
@@ -47,17 +66,25 @@ export function CartMenu({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
-        className="relative flex items-center transition-colors hover:text-accent"
+        className="relative flex items-center transition-all duration-200 hover:scale-110 hover:text-accent"
         aria-label="Cart"
       >
         <ShoppingCart className="size-5" />
         {count > 0 && (
           <Badge
             variant="accent"
-            className="absolute -top-2 -right-2 h-4 min-w-4 justify-center rounded-full px-1 text-[10px]"
+            className="absolute -top-2 -end-2 h-4 min-w-4 justify-center rounded-full px-1 text-[10px]"
           >
             {count}
           </Badge>
+        )}
+        {dropKey !== null && (
+          <ShoppingBag
+            key={dropKey}
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 -top-1 mx-auto size-4 text-accent"
+            style={{ animation: "kickoff-bag-drop 700ms ease-in forwards" }}
+          />
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 p-0">
@@ -101,7 +128,7 @@ export function CartMenu({
                         {item.quantity}×
                       </p>
                     </div>
-                    <div className="shrink-0 text-right">
+                    <div className="shrink-0 text-end">
                       <p className="text-sm font-medium text-brand">
                         ${lineTotal.toFixed(2)}
                       </p>
@@ -117,7 +144,7 @@ export function CartMenu({
               <span className="text-sm font-semibold text-foreground">
                 {dict.total}
               </span>
-              <div className="text-right">
+              <div className="text-end">
                 <p className="text-sm font-semibold text-brand">
                   ${total.toFixed(2)}
                 </p>

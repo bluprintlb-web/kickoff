@@ -1,4 +1,4 @@
-# Leader Sport
+# Kick Off
 
 Football store — storefront (kits/jerseys, trophies, balls, gloves, body/leggings, shin pads, grip socks, normal socks) plus an admin dashboard for managing products, stock, and orders.
 

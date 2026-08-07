@@ -18,6 +18,7 @@ export function CheckoutForm({ locale }: { locale: Locale }) {
   const PAYMENT_METHODS = [
     { value: "WHISH", label: dict.whish },
     { value: "CARD", label: dict.card },
+    { value: "CASH", label: dict.cashOnDelivery },
   ] as const;
 
   const router = useRouter();
@@ -141,10 +142,10 @@ export function CheckoutForm({ locale }: { locale: Locale }) {
                   type="button"
                   onClick={() => setPaymentMethod(method.value)}
                   className={cn(
-                    "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                    "rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200",
                     paymentMethod === method.value
                       ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border text-muted-foreground hover:text-foreground"
+                      : "border-border text-muted-foreground hover:scale-105 hover:text-foreground"
                   )}
                 >
                   {method.label}
@@ -156,12 +157,18 @@ export function CheckoutForm({ locale }: { locale: Locale }) {
           <div className="flex items-center justify-between border-t pt-6">
             <span className="text-lg font-semibold">
               {dict.total}: <span className="text-brand">${total.toFixed(2)}</span>
-              <span className="ml-1.5 text-sm font-normal text-muted-foreground">
+              <span className="ms-1.5 text-sm font-normal text-muted-foreground">
                 ({formatLBP(total)})
               </span>
             </span>
             <Button type="submit" size="lg" disabled={checkout.isPending}>
-              {checkout.isPending ? dict.redirecting : dict.payNow}
+              {paymentMethod === "CASH"
+                ? checkout.isPending
+                  ? dict.placingOrder
+                  : dict.placeOrder
+                : checkout.isPending
+                  ? dict.redirecting
+                  : dict.payNow}
             </Button>
           </div>
         </form>

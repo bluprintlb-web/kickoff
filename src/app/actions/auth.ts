@@ -78,3 +78,21 @@ export async function login(
     throw error;
   }
 }
+
+// Bridges a client-side Firebase sign-in (Google popup or phone/OTP) into a
+// real site session. Called imperatively from a client component's event
+// handler once Firebase itself has already confirmed the identity — not a
+// <form>/useActionState flow like login/signup above, since the trigger is
+// an async popup/SMS-confirm result, not a form submission.
+export async function firebaseLogin(
+  idToken: string
+): Promise<{ error: string } | undefined> {
+  try {
+    await signIn("firebase", { idToken, redirectTo: "/" });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: "Sign-in failed. Please try again." };
+    }
+    throw error;
+  }
+}

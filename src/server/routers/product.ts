@@ -132,6 +132,19 @@ export const productRouter = router({
       })
     ),
 
+  // A real, permanent delete — not the isActive soft-delete above. Safe to
+  // cascade even for a product that's already been sold: ProductVariant
+  // cascades from Product, and OrderItem.variant is SET NULL (not
+  // RESTRICT) on variant delete, so past orders survive with their
+  // unitPrice/quantity intact, just losing the variant reference. Any
+  // CartItem referencing a deleted variant cascades away too — a deleted
+  // product shouldn't linger in someone's cart.
+  delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) =>
+      ctx.prisma.product.delete({ where: { id: input.id } })
+    ),
+
   update: adminProcedure
     .input(
       z.object({

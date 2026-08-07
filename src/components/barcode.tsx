@@ -2,6 +2,7 @@
 
 import JsBarcode from "jsbarcode";
 import { useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export function Barcode({
   value,
@@ -22,7 +23,8 @@ export function Barcode({
         width: 1.5,
         fontSize: 11,
         margin: 4,
-        background: "transparent",
+        background: "#ffffff",
+        lineColor: "#000000",
       });
     } catch {
       // Not every stored barcode is valid CODE128 input — fail silently
@@ -30,5 +32,8 @@ export function Barcode({
     }
   }, [value]);
 
-  return <svg ref={svgRef} className={className} />;
+  // Fixed white background + black lines regardless of theme — admin's
+  // always dark (see src/app/admin/layout.tsx), and a transparent barcode
+  // with default-black lines would be invisible on a dark card.
+  return <svg ref={svgRef} className={cn("rounded-sm", className)} />;
 }

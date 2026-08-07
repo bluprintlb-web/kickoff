@@ -1,13 +1,20 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
-// Shared "LS" mark used everywhere the admin PWA needs a generated icon
-// (favicon, apple-touch-icon, manifest icons) — one steel-grey tile, sized
-// to spec, with extra padding on the maskable variant so Android's adaptive
-// icon crop never clips the glyph. Colors are the "Pale Slate" / "Shadow
-// Grey" steps of the Light Steel palette (see globals.css) — kept as plain
-// hex here since next/og's ImageResponse can't read CSS custom properties.
+// The real KICKOFF.LB icon (public/brand/kickoff-icon.png, transparent
+// background) read once at module load and inlined as a data URI — next/og's
+// ImageResponse can't reference /public paths directly, only actual image
+// data. Background is pure black to match the logo's own backdrop (also the
+// --surface-brand token — kept as a plain hex here since ImageResponse can't
+// read CSS custom properties). Replaces the earlier deep-purple "A" tile
+// used during the Ayaz rename.
+const ICON_DATA_URI = `data:image/png;base64,${readFileSync(
+  join(process.cwd(), "public/brand/kickoff-icon.png")
+).toString("base64")}`;
+
 export function renderAppIcon(size: number, { maskable = false } = {}) {
-  const padding = maskable ? size * 0.2 : size * 0.12;
+  const padding = maskable ? size * 0.24 : size * 0.14;
   const inner = size - padding * 2;
 
   return new ImageResponse(
@@ -19,24 +26,17 @@ export function renderAppIcon(size: number, { maskable = false } = {}) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#adb5bd",
+          background: "#000000",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: inner,
-            height: inner,
-            fontSize: inner * 0.5,
-            fontWeight: 700,
-            color: "#212529",
-            fontFamily: "sans-serif",
-          }}
-        >
-          LS
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={ICON_DATA_URI}
+          width={inner}
+          height={inner}
+          alt=""
+          style={{ objectFit: "contain" }}
+        />
       </div>
     ),
     { width: size, height: size }

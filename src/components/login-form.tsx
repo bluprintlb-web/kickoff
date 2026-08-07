@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { login } from "@/app/actions/auth";
+import { FirebaseAuthButtons } from "@/components/firebase-auth-buttons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,19 @@ export function LoginForm({ locale }: { locale: Locale }) {
             {pending ? dict.loggingIn : dict.logIn}
           </Button>
         </form>
+
+        <div className="mt-4">
+          <FirebaseAuthButtons
+            dict={dictionaries[locale].firebaseAuth}
+            locale={locale}
+          />
+        </div>
+
+        <Link href="/" className="mt-4 block">
+          <Button type="button" variant="outline" className="w-full">
+            {dict.continueAsGuest}
+          </Button>
+        </Link>
       </Card>
 
       <p className="text-center text-sm text-muted-foreground">

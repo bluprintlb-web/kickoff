@@ -12,11 +12,11 @@ const NAV_ITEMS = [
   { href: "/admin/profile", label: "Profile", icon: User, exact: false },
 ] as const;
 
-export function AdminSidebarNav() {
+export function AdminTopNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-1">
+    <nav className="flex items-center gap-1">
       {NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
         const active = exact ? pathname === href : pathname.startsWith(href);
         return (
@@ -24,10 +24,10 @@ export function AdminSidebarNav() {
             key={href}
             href={href}
             className={cn(
-              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "flex items-center gap-2 border-b-2 px-3 py-4 text-sm font-medium transition-all duration-200",
               active
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:-translate-y-0.5 hover:border-border hover:text-foreground"
             )}
           >
             <Icon className="size-4" />

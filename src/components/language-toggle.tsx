@@ -33,6 +33,12 @@ export function LanguageToggle({
   const [pending, setPending] = useState<Locale | null>(null);
   const active = pending ?? locale;
   const activeIndex = OPTIONS.findIndex((o) => o.value === active);
+  // The container's own dir (set by the current *page* locale, not the
+  // pending selection — that only flips after the reload) determines which
+  // physical direction "sliding toward a later option" actually moves in,
+  // since `translateX` operates in screen coordinates and isn't flipped by
+  // `dir` the way `left`/`insetInlineStart` are.
+  const sign = locale === "ar" ? -1 : 1;
 
   function handleSelect(next: Locale) {
     if (pending || next === locale) return;
@@ -53,8 +59,8 @@ export function LanguageToggle({
     >
       <div
         aria-hidden
-        className="absolute top-0.5 bottom-0.5 left-0.5 w-9 rounded-full bg-orange-500 transition-transform duration-300 ease-out"
-        style={{ transform: `translateX(${activeIndex * OPTION_WIDTH}px)` }}
+        className="absolute top-0.5 bottom-0.5 start-0.5 w-9 rounded-full bg-white/15 transition-transform duration-300 ease-out"
+        style={{ transform: `translateX(${activeIndex * OPTION_WIDTH * sign}px)` }}
       />
       {OPTIONS.map((option) => (
         <button
@@ -63,10 +69,10 @@ export function LanguageToggle({
           onClick={() => handleSelect(option.value)}
           aria-pressed={active === option.value}
           className={cn(
-            "relative z-10 w-9 rounded-full py-1 text-center text-xs font-semibold transition-opacity duration-200",
+            "relative z-10 w-9 rounded-full py-1 text-center text-xs font-semibold transition-all duration-200",
             active === option.value
-              ? "text-white opacity-100"
-              : "opacity-70 hover:opacity-100"
+              ? "opacity-100"
+              : "opacity-70 hover:scale-110 hover:opacity-100"
           )}
         >
           {option.label}

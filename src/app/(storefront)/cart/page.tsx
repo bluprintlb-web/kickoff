@@ -58,7 +58,7 @@ export default async function CartPage() {
             <span className="text-lg font-semibold">
               {dict.cart.total}:{" "}
               <span className="text-brand">${total.toFixed(2)}</span>
-              <span className="ml-1.5 text-sm font-normal text-muted-foreground">
+              <span className="ms-1.5 text-sm font-normal text-muted-foreground">
                 ({formatLBP(total)})
               </span>
             </span>

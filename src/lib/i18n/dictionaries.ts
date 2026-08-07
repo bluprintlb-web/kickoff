@@ -6,6 +6,7 @@ const en = {
   promoBar:
     "Kits · Jerseys · Trophies · Balls · Gloves · Match-day gear — serving football fans across Lebanon",
   nav: {
+    menu: "Menu",
     shop: "Shop",
     admin: "Admin",
     profile: "Profile",
@@ -22,10 +23,8 @@ const en = {
   trustStrip: {
     basedTitle: "Based in Lebanon",
     basedDesc: "Serving football fans across the country.",
-    storeTitle: "Online & in-store",
-    storeDesc: "Shop here or visit us in person.",
     secureTitle: "Secure checkout",
-    secureDesc: "Pay by Whish wallet, card, or cash in-store.",
+    secureDesc: "Pay by Whish wallet or card.",
   },
   categoriesSection: {
     heading: "Shop by category",
@@ -74,13 +73,16 @@ const en = {
     paymentMethod: "Payment method",
     whish: "Whish",
     card: "Visa / Mastercard",
+    cashOnDelivery: "Cash on delivery",
     total: "Total",
     payNow: "Pay now",
     redirecting: "Redirecting to payment...",
+    placeOrder: "Place order",
+    placingOrder: "Placing order...",
   },
   auth: {
     welcomeBack: "Welcome back",
-    loginSubtitle: "Log in to your Leader Sport account.",
+    loginSubtitle: "Log in to your Kick Off account.",
     email: "Email",
     password: "Password",
     logIn: "Log in",
@@ -92,6 +94,23 @@ const en = {
     name: "Name",
     creatingAccount: "Creating account...",
     haveAccount: "Already have an account?",
+    continueAsGuest: "Continue as guest",
+  },
+  firebaseAuth: {
+    orContinueWith: "Or continue with",
+    continueWithGoogle: "Continue with Google",
+    phoneNumber: "Phone number",
+    phoneNumberHint: "We'll text you a one-time verification code.",
+    sendCode: "Send code",
+    sendingCode: "Sending...",
+    verificationCode: "Verification code",
+    verificationCodeHint: "Enter the code sent to your phone",
+    verify: "Verify",
+    verifying: "Verifying...",
+    changeNumber: "Use a different number",
+    genericError: "Something went wrong. Please try again.",
+    invalidPhone: "Enter a valid phone number, including country code.",
+    invalidCode: "That code isn't right. Please try again.",
   },
   footer: {
     tagline:
@@ -101,6 +120,7 @@ const en = {
     basedInLebanon: "Based in Lebanon",
     onlineInStore: "Shop online or visit us in person",
     payment: "Pay by Whish wallet, card, or cash in-store",
+    followUs: "Follow us",
     rights: "All rights reserved.",
   },
   cartMenu: {
@@ -157,6 +177,7 @@ const en = {
     total: "Total",
     pendingNotice:
       "We're waiting for payment confirmation from Whish — this page will reflect the final status once that comes through.",
+    cashPendingNotice: "Pay in cash when your order is delivered.",
   },
   profile: {
     title: "Profile",
@@ -191,12 +212,19 @@ const en = {
     deleting: "Deleting...",
     cancel: "Cancel",
   },
+  campaigns: {
+    christmas: "Festive season is here — kits and gifts for every fan on your list",
+    worldCup: "World Cup fever is on — grab your national kit now",
+    championsLeague: "Champions League night — wear the crest",
+    laLiga: "La Liga matchday — rep your club",
+  },
 };
 
 const ar: typeof en = {
   promoBar:
     "أطقم · قمصان · كؤوس · كرات · قفازات · مستلزمات يوم المباراة — نخدم عشاق كرة القدم في لبنان",
   nav: {
+    menu: "القائمة",
     shop: "المتجر",
     admin: "الإدارة",
     profile: "الملف الشخصي",
@@ -213,10 +241,8 @@ const ar: typeof en = {
   trustStrip: {
     basedTitle: "مقرّنا في لبنان",
     basedDesc: "نخدم عشاق كرة القدم في جميع أنحاء البلاد.",
-    storeTitle: "أونلاين وفي المتجر",
-    storeDesc: "تسوّق هنا أو زُرنا شخصيًا.",
     secureTitle: "دفع آمن",
-    secureDesc: "ادفع عبر محفظة Whish، البطاقة، أو نقدًا في المتجر.",
+    secureDesc: "ادفع عبر محفظة Whish أو البطاقة.",
   },
   categoriesSection: {
     heading: "تسوّق حسب الفئة",
@@ -265,13 +291,16 @@ const ar: typeof en = {
     paymentMethod: "طريقة الدفع",
     whish: "Whish",
     card: "فيزا / ماستركارد",
+    cashOnDelivery: "الدفع عند الاستلام",
     total: "الإجمالي",
     payNow: "ادفع الآن",
     redirecting: "جارٍ التحويل إلى الدفع...",
+    placeOrder: "تأكيد الطلب",
+    placingOrder: "جارٍ تأكيد الطلب...",
   },
   auth: {
     welcomeBack: "مرحبًا بعودتك",
-    loginSubtitle: "سجّل الدخول إلى حساب Leader Sport الخاص بك.",
+    loginSubtitle: "سجّل الدخول إلى حساب Kick Off الخاص بك.",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
     logIn: "تسجيل الدخول",
@@ -283,6 +312,23 @@ const ar: typeof en = {
     name: "الاسم",
     creatingAccount: "جارٍ إنشاء الحساب...",
     haveAccount: "لديك حساب بالفعل؟",
+    continueAsGuest: "المتابعة كزائر",
+  },
+  firebaseAuth: {
+    orContinueWith: "أو تابع باستخدام",
+    continueWithGoogle: "المتابعة باستخدام Google",
+    phoneNumber: "رقم الهاتف",
+    phoneNumberHint: "سنرسل لك رمز تحقق عبر رسالة نصية.",
+    sendCode: "إرسال الرمز",
+    sendingCode: "جارٍ الإرسال...",
+    verificationCode: "رمز التحقق",
+    verificationCodeHint: "أدخل الرمز المُرسَل إلى هاتفك",
+    verify: "تحقّق",
+    verifying: "جارٍ التحقق...",
+    changeNumber: "استخدام رقم آخر",
+    genericError: "حدث خطأ ما. حاول مرة أخرى.",
+    invalidPhone: "أدخل رقم هاتف صالح مع رمز البلد.",
+    invalidCode: "الرمز غير صحيح. حاول مرة أخرى.",
   },
   footer: {
     tagline:
@@ -292,6 +338,7 @@ const ar: typeof en = {
     basedInLebanon: "مقرّنا في لبنان",
     onlineInStore: "تسوّق أونلاين أو زُرنا شخصيًا",
     payment: "ادفع عبر محفظة Whish، البطاقة، أو نقدًا في المتجر",
+    followUs: "تابعنا",
     rights: "جميع الحقوق محفوظة.",
   },
   cartMenu: {
@@ -348,6 +395,7 @@ const ar: typeof en = {
     total: "الإجمالي",
     pendingNotice:
       "ننتظر تأكيد الدفع من Whish — ستُحدَّث هذه الصفحة بالحالة النهائية فور وصوله.",
+    cashPendingNotice: "ادفع نقدًا عند استلام طلبك.",
   },
   profile: {
     title: "الملف الشخصي",
@@ -380,6 +428,12 @@ const ar: typeof en = {
     deleteConfirmButton: "حذف حسابي",
     deleting: "جارٍ الحذف...",
     cancel: "إلغاء",
+  },
+  campaigns: {
+    christmas: "حان موسم الأعياد — أطقم وهدايا لكل عشاق الكرة",
+    worldCup: "حمّى كأس العالم بدأت — احصل على طقم منتخبك الآن",
+    championsLeague: "ليلة دوري أبطال أوروبا — البس شعار فريقك",
+    laLiga: "مباراة الليغا — البس ألوان ناديك",
   },
 };
 

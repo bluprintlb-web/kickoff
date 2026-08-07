@@ -43,6 +43,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-admin-sale: var(--admin-sale);
+  --color-admin-edit: var(--admin-edit);
+  --color-admin-warning: var(--admin-warning);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,14 +55,18 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* "Light Steel" palette (2026-07-16, at user's request) — nine oklch steps
-   converted directly from the exact hex values given (Bright Snow #f8f9fa
-   through Shadow Grey #212529; this is Bootstrap's gray-100..900 ramp).
-   Fully monochrome by request: the old gold --accent and green --brand
-   tokens are gone, replaced by steps from this same ramp, reused across
-   both light and dark mode rather than inventing new hues. --destructive
-   is the one deliberate exception — kept as red since it's a functional
-   safety signal (delete/error states), not brand decoration. */
+/* "Kick Off" palette (2026-08-04, at user's request, replacing the "Ayaz"
+   pink/purple palette — back to a football-store identity under the new
+   name Kick Off). Neutrals (background/foreground/card/secondary/muted/
+   border/input/ring/chart/sidebar, plus the primary flip) are the same
+   "Light Steel" Bootstrap gray-100..900 ramp used before the Ayaz
+   experiment — still the cleanest neutral base. What actually changed:
+   --surface-brand (header/footer/hero band) is now pure black and
+   --accent/--brand are the exact pitch-green from the KICKOFF.LB logo mark
+   (sampled from the logo artwork, hex #7abe1a, converted through the real
+   sRGB→OKLab→OKLCH formula, not eyeballed) — both fixed the same in light
+   and dark mode, since the logo's own black/green identity doesn't flip.
+   --destructive stays red, the one deliberate non-brand exception. */
 :root {
   --background: oklch(0.982 0.002 247.8); /* Bright Snow */
   --foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
@@ -69,22 +76,19 @@
   --popover-foreground: oklch(0.262 0.009 248.2);
   --primary: oklch(0.345 0.013 248.2); /* Gunmetal */
   --primary-foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
-  /* Deliberately defined only in :root, not .dark — this is the brand bar
-     (header/footer/hero), which stays constant across light and dark mode
-     rather than flipping like --primary does (--primary flips to a light
-     neutral in dark mode so admin's default buttons stay visible on a
-     near-black page; reusing it for the storefront's brand bar would make
-     the header go light in dark mode, which is wrong). */
-  --surface-brand: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  /* Brand bar (header/hero/footer) — the logo's own black backdrop, fixed
+     in :root only (not redeclared in .dark) so it cascades unchanged into
+     dark mode, same pattern the Light Steel pass used. */
+  --surface-brand: oklch(0 0 0); /* pure black, the logo's backdrop */
   --surface-brand-foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
   --secondary: oklch(0.911 0.007 247.9); /* Alabaster Grey */
   --secondary-foreground: oklch(0.262 0.009 248.2);
   --muted: oklch(0.942 0.005 247.9); /* Platinum */
   --muted-foreground: oklch(0.558 0.016 244.9); /* Slate Grey */
-  --accent: oklch(0.769 0.015 248); /* Pale Slate (darker) */
-  --accent-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
-  --brand: oklch(0.428 0.015 248.2); /* Iron Grey */
-  --brand-foreground: oklch(0.982 0.002 247.8); /* Bright Snow */
+  --accent: oklch(0.728 0.192 131.2); /* pitch green, from the logo (#7abe1a) */
+  --accent-foreground: oklch(0.145 0 0); /* near-black, for contrast on the green */
+  --brand: oklch(0.728 0.192 131.2); /* same pitch green — prices/success */
+  --brand-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.911 0.007 247.9); /* Alabaster Grey */
   --input: oklch(0.911 0.007 247.9);
@@ -103,6 +107,13 @@
   --sidebar-accent-foreground: oklch(0.262 0.009 248.2);
   --sidebar-border: oklch(0.911 0.007 247.9);
   --sidebar-ring: oklch(0.428 0.015 248.2);
+  /* Row-action button/badge colors (products table Sale/Edit, stock warning
+     badge) — fixed in :root only, not redeclared in .dark, so they cascade
+     unchanged into dark mode too. Deliberately outside the black/green
+     brand pair since these are functional status colors, not decoration. */
+  --admin-sale: oklch(0.623 0.188 259.8); /* blue */
+  --admin-edit: oklch(0.65 0.11 200); /* teal */
+  --admin-warning: oklch(0.769 0.165 70.1); /* amber */
 }
 
 .dark {
@@ -118,10 +129,10 @@
   --secondary-foreground: oklch(0.982 0.002 247.8);
   --muted: oklch(0.428 0.015 248.2); /* Iron Grey */
   --muted-foreground: oklch(0.769 0.015 248); /* Pale Slate (darker) */
-  --accent: oklch(0.769 0.015 248); /* Pale Slate (darker) — same as light */
-  --accent-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
-  --brand: oklch(0.867 0.011 247.9); /* Pale Slate (lighter) */
-  --brand-foreground: oklch(0.262 0.009 248.2); /* Shadow Grey */
+  --accent: oklch(0.728 0.192 131.2); /* same pitch green as light */
+  --accent-foreground: oklch(0.145 0 0); /* same as light */
+  --brand: oklch(0.728 0.192 131.2); /* same pitch green as light */
+  --brand-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(0.428 0.015 248.2); /* Iron Grey */
   --input: oklch(0.428 0.015 248.2);
@@ -157,4 +168,120 @@
    before hydration, so this never flashes visible-then-hidden. */
 html[data-hide-splash="1"] #app-splash {
   display: none;
+}
+
+/* Splash loading bar — fills over the same 3000ms the splash itself is
+   held on screen (see SPLASH_INIT_SCRIPT), so the bar finishing lines up
+   with the splash actually fading out. */
+@keyframes kickoff-splash-loading {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Header cart icon: a small bag drops in and shrinks/fades away right at
+   the cart icon, on every successful "Add to cart" — see CART_ITEM_ADDED_EVENT
+   in src/lib/cart-events.ts / src/components/cart-menu.tsx. */
+@keyframes kickoff-bag-drop {
+  0% {
+    transform: translateY(-14px) scale(0.7);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(2px) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Sitewide "everything reacts to the cursor" pass (2026-08-07): a small
+   reusable set of hover primitives applied across nav/footer links, icon
+   triggers, and the campaign banner's decorative motifs, instead of every
+   component hand-rolling its own hover animation.
+
+   .hover-underline grows from the center rather than a fixed edge — a
+   plain left-anchored underline would need direction-aware overrides under
+   RTL (see LanguageToggle/ThemeToggle's translateX sign-flip fix in
+   CONTEXT_HANDOFF.md), which center-out growth sidesteps entirely. */
+@layer components {
+  .hover-underline {
+    position: relative;
+  }
+  .hover-underline::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 1.5px;
+    transform: scaleX(0);
+    transform-origin: center;
+    background-color: currentColor;
+    transition: transform 250ms ease-out;
+  }
+  .hover-underline:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes kickoff-icon-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(1px);
+  }
+}
+
+/* Campaign banner decorative motifs (see src/lib/football-events.ts /
+   src/components/campaign-banner.tsx) — small, subtle, never covering the
+   banner text (kept low-opacity and confined to the bar's own height). */
+@keyframes kickoff-motif-fall {
+  0% {
+    transform: translateY(-140%) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(240%) rotate(200deg);
+    opacity: 0;
+  }
+}
+
+@keyframes kickoff-motif-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes kickoff-motif-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
 }

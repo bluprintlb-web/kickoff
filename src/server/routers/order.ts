@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { notifyOwnerOfOrder } from "@/lib/notify-order";
 import { getPaymentProvider } from "@/lib/payments";
 import { effectiveUnitPrice } from "@/lib/pricing";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
@@ -78,7 +79,7 @@ export const orderRouter = router({
   checkout: protectedProcedure
     .input(
       z.object({
-        paymentMethod: z.enum(["WHISH", "CARD"]),
+        paymentMethod: z.enum(["WHISH", "CARD", "CASH"]),
         shippingName: z.string().min(1),
         shippingAddress: z.string().min(1),
         shippingCity: z.string().min(1),
@@ -138,9 +139,46 @@ export const orderRouter = router({
         return createdOrder;
       });
 
+      const customer = await ctx.prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { phone: true },
+      });
+      notifyOwnerOfOrder({
+        orderId: order.id,
+        customerName: input.shippingName,
+        customerPhone: customer?.phone,
+        items: cart.items.map((item) => ({
+          name: item.variant.product.name,
+          size: item.variant.size,
+          quantity: item.quantity,
+          unitPrice: effectiveUnitPrice(item.variant),
+        })),
+        total: Number(order.total),
+        address: {
+          line1: input.shippingAddress,
+          city: input.shippingCity,
+          postalCode: input.shippingPostalCode,
+          country: input.shippingCountry,
+        },
+      });
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+      // Cash on delivery never touches a payment provider — nothing to
+      // redirect to, nothing that can fail mid-call, and no reference to
+      // record. The order is left PENDING (its default) exactly like a
+      // just-placed WHISH/CARD order is before its payment clears; it's
+      // marked paid once cash is actually collected at delivery, same as
+      // any other pending order.
+      if (input.paymentMethod === "CASH") {
+        return {
+          redirectUrl: `${appUrl}/orders/${order.id}`,
+          orderId: order.id,
+        };
+      }
+
       try {
         const provider = getPaymentProvider(input.paymentMethod);
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
         const checkout = await provider.createCheckout({
           orderId: order.id,
           amount: Number(order.total),

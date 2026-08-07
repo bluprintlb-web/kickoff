@@ -1,0 +1,8 @@
+node_modules/
+
+# WhatsApp session credentials — this is effectively a login token for the
+# owner's real WhatsApp account. Never commit it; anyone with these files
+# can send/receive messages as that account.
+auth_info_baileys/
+
+.env

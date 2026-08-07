@@ -68,7 +68,7 @@ export function CartItemRow({
           +
         </Button>
       </div>
-      <div className="w-24 text-right">
+      <div className="w-24 text-end">
         <p className="font-medium text-brand">${lineTotal.toFixed(2)}</p>
         <p className="text-[11px] text-muted-foreground">
           {formatLBP(lineTotal)}

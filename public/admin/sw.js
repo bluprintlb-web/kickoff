@@ -6,7 +6,7 @@
 // friendly offline page instead of the browser's default error when there's
 // no connection at all.
 const OFFLINE_URL = "/admin/offline";
-const CACHE_NAME = "leader-sport-admin-shell-v1";
+const CACHE_NAME = "kickoff-admin-shell-v1";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

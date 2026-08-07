@@ -13,7 +13,7 @@ type Theme = "light" | "dark" | null;
 type ThemeContextValue = { theme: Theme; setTheme: (theme: Theme) => void };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
-const STORAGE_KEY = "leader-sport-theme";
+const STORAGE_KEY = "kickoff-theme";
 
 function parseTheme(raw: string | null): Theme {
   return raw === "light" || raw === "dark" ? raw : null;
