@@ -23,8 +23,8 @@ publishes or supports.
 ## Why this needs its own always-on host (not Vercel, alongside the Next.js app)
 
 Baileys holds a persistent WebSocket connection open to WhatsApp's servers
-and needs to write its session credentials to disk so it doesn't ask for a
-new QR-code login on every restart. Vercel's serverless functions are
+and needs to write its session credentials to disk so it doesn't ask to
+link again on every restart. Vercel's serverless functions are
 short-lived and their filesystem is not reliably persistent across
 invocations — both requirements break there. Railway/Render (regular
 always-on containers with a real persistent disk) are the right fit, same
@@ -41,12 +41,16 @@ cp .env.example .env
 npm run dev
 ```
 
-On first run, a QR code prints in the terminal. Open WhatsApp on your
-phone → **Settings → Linked Devices → Link a Device** → scan it. Once
-connected, the session is saved to `AUTH_DIR` (`./auth_info_baileys` by
-default) and future restarts skip the QR step entirely — **do not commit
-that folder**, it's already in `.gitignore` (it's effectively a login
-token for your WhatsApp account).
+On first run, it prints an **8-character pairing code** in the terminal
+(not a QR code — a QR code renders as distorted ASCII art in some log
+viewers, e.g. Railway's web log tab; a short text code doesn't have that
+problem). On your phone: **WhatsApp → Settings → Linked Devices → Link a
+Device → "Link with phone number instead"** → type the code in. You have
+about 60 seconds — if it expires, the service automatically issues a new
+one (watch the logs). Once linked, the session is saved to `AUTH_DIR`
+(`./auth_info_baileys` by default) and future restarts skip login
+entirely — **do not commit that folder**, it's already in `.gitignore`
+(it's effectively a login token for your WhatsApp account).
 
 Test the endpoint once connected:
 
@@ -86,10 +90,13 @@ curl -X POST http://localhost:3300/notify-order \
    - Leave `PORT` unset — Railway injects it automatically and the app
      already reads `process.env.PORT`.
 6. **Deploy**, then open the **Deployments → Logs** tab and watch it boot.
-   On first boot (no session yet) it prints a QR code as ASCII art directly
-   in the log stream — scan it with WhatsApp within the display window
-   (it auto-regenerates if it expires before you get to it). Once you see
-   `[whatsapp] connected` in the logs, it's done — that session is now
+   On first boot (no session yet) it prints an 8-character pairing code
+   directly in the log stream, e.g. `PAIRING CODE: 4FT35DFX` — on your
+   phone: **WhatsApp → Settings → Linked Devices → Link a Device → "Link
+   with phone number instead"** → type it in within about 60 seconds. If
+   it expires first, a fresh one is issued automatically (watch the logs;
+   it won't spam a new code faster than roughly once a minute). Once you
+   see `[whatsapp] connected` in the logs, it's done — that session is now
    saved to the volume and survives future redeploys/restarts without
    asking again.
 7. **Settings → Networking → Generate Domain** to get a public URL, e.g.
@@ -115,15 +122,25 @@ instance type with a **Disk** attached, mount it (e.g. at `/data`), and set
 
 ## Troubleshooting
 
-- **Asked for a new QR code after a redeploy** → `AUTH_DIR` isn't pointing
+- **Asked to link again after a redeploy** → `AUTH_DIR` isn't pointing
   inside your persistent volume/disk, so the session file didn't survive.
+- **`connection closed, reconnecting... 401` appears a few times before it
+  links** → normal, not an error. WhatsApp closes the connection right
+  after issuing a pairing code and before it's entered on the phone; the
+  service just reconnects and waits (with a short delay between attempts,
+  so it doesn't hammer WhatsApp's servers) until you actually type the
+  code in, or a fresh one is issued if it expires.
+- **`session logged out` and it stops retrying** → this one *is* final —
+  it only fires after a session that was previously fully linked
+  (`registered`) gets logged out from the phone side (e.g. you removed the
+  linked device in WhatsApp's own settings). Delete the volume's
+  `auth_info_baileys` contents and redeploy/restart to link again with a
+  fresh pairing code.
 - **`/notify-order` returns 401** → `NOTIFY_SECRET` here and
   `NOTIFY_ORDER_SECRET` in the main app don't match exactly.
 - **`/notify-order` returns 502** → the WhatsApp socket itself couldn't
-  send (commonly: it's mid-reconnect, or the session was logged out from
-  your phone — check the logs for `[whatsapp] session logged out`, which
-  means you'll need to delete the volume's `auth_info_baileys` contents
-  and re-scan a fresh QR code).
+  send — commonly it's still mid-pairing/reconnecting (see above), or
+  genuinely logged out (see above).
 - **Order placed but no message, and no error in the main app** — the main
   app's call to this service is intentionally fire-and-forget (a WhatsApp
   outage should never fail a real checkout), so check *this* service's own
