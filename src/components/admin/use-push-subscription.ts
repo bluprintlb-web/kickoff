@@ -19,6 +19,32 @@ function urlBase64ToUint8Array(base64String: string) {
 
 type SupportStatus = "unsupported" | "denied" | "supported";
 
+// navigator.serviceWorker.ready is a promise that, per spec, never rejects
+// — it only resolves once a service worker becomes active for the current
+// page's scope. If that never happens (e.g. a scope mismatch, or
+// registration silently failing), it hangs forever with no error, which is
+// exactly what left this stuck on "Checking notification status..."
+// indefinitely. Racing it against a timeout turns that into a real,
+// catchable failure instead of a silent hang.
+const SERVICE_WORKER_READY_TIMEOUT_MS = 6000;
+
+function serviceWorkerReadyOrTimeout(): Promise<ServiceWorkerRegistration> {
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              "Timed out waiting for the service worker to activate."
+            )
+          ),
+        SERVICE_WORKER_READY_TIMEOUT_MS
+      )
+    ),
+  ]);
+}
+
 // Read via useSyncExternalStore, not a useState lazy initializer. This
 // project has hit two real hydration-mismatch bugs before (locale, theme —
 // see CONTEXT_HANDOFF.md) from reading browser-only state (localStorage,
@@ -71,7 +97,7 @@ export function usePushSubscription() {
   useEffect(() => {
     if (supportStatus !== "supported") return;
     let cancelled = false;
-    navigator.serviceWorker.ready
+    serviceWorkerReadyOrTimeout()
       .then((registration) => registration.pushManager.getSubscription())
       .then((existing) => {
         if (!cancelled) setEndpoint(existing?.endpoint ?? null);
@@ -95,7 +121,7 @@ export function usePushSubscription() {
     if (permission !== "granted") return;
 
     try {
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await serviceWorkerReadyOrTimeout();
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
@@ -119,7 +145,7 @@ export function usePushSubscription() {
 
   async function disable() {
     try {
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await serviceWorkerReadyOrTimeout();
       const subscription = await registration.pushManager.getSubscription();
       if (subscription) {
         await unsubscribeMutation.mutateAsync({

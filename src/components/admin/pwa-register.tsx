@@ -18,8 +18,15 @@ export function PwaRegister({ className }: { className?: string }) {
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
+      // Scope "/admin" (no trailing slash), not "/admin/" — the dashboard's
+      // own URL is the bare "/admin" route, which does NOT satisfy a
+      // "/admin/" scope under strict spec string-prefix matching. The route
+      // handler at src/app/admin/sw.js/route.ts sends a
+      // Service-Worker-Allowed: /admin header to permit this wider scope
+      // (without it, a script at /admin/sw.js can only be granted /admin/
+      // or narrower).
       navigator.serviceWorker
-        .register("/admin/sw.js", { scope: "/admin/" })
+        .register("/admin/sw.js", { scope: "/admin" })
         .catch(() => {
           // No offline fallback / install prompt this session — not worth surfacing.
         });
