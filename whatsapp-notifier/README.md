@@ -89,12 +89,17 @@ curl -X POST http://localhost:3300/notify-order \
    - `BAILEYS_LOG_LEVEL` — `warn` (optional, that's already the default)
    - Leave `PORT` unset — Railway injects it automatically and the app
      already reads `process.env.PORT`.
-6. **Deploy**, then open the **Deployments → Logs** tab and watch it boot.
-   On first boot (no session yet) it prints an 8-character pairing code
-   directly in the log stream, e.g. `PAIRING CODE: 4FT35DFX` — on your
-   phone: **WhatsApp → Settings → Linked Devices → Link a Device → "Link
-   with phone number instead"** → type it in within about 60 seconds. If
-   it expires first, a fresh one is issued automatically (watch the logs;
+6. **Deploy**. **Before** opening the logs, get your phone to the entry
+   screen first: WhatsApp → Settings → Linked Devices → Link a Device →
+   "Link with phone number instead" — leave that open and ready. *Then*
+   open the **Deployments → Logs** tab. WhatsApp only gives you ~60
+   seconds per code (that window is fixed on WhatsApp's side, not
+   something this service controls), so the less time spent finding the
+   right phone screen after you've already seen the code, the better your
+   odds of entering it in time. On first boot (no session yet) it prints
+   an 8-character pairing code directly in the log stream, e.g.
+   `PAIRING CODE: 4FT35DFX` — type it in immediately. If it expires
+   first, a fresh one is issued automatically (watch the logs;
    it won't spam a new code faster than roughly once a minute). Once you
    see `[whatsapp] connected` in the logs, it's done — that session is now
    saved to the volume and survives future redeploys/restarts without
@@ -130,6 +135,17 @@ instance type with a **Disk** attached, mount it (e.g. at `/data`), and set
   service just reconnects and waits (with a short delay between attempts,
   so it doesn't hammer WhatsApp's servers) until you actually type the
   code in, or a fresh one is issued if it expires.
+- **`gave up after 15 consecutive failed connection attempts`** → the
+  service intentionally stops retrying rather than looping forever against
+  WhatsApp's real servers unsupervised. If this happens on what should be
+  a first, clean attempt (not after a lot of prior back-and-forth testing),
+  it's a stronger signal than the normal 401-while-pairing pattern above —
+  possibly WhatsApp rate-limiting this number or Railway's IP range after
+  repeated attempts. **Stop the service, wait several hours (ideally
+  overnight) before trying again** — retrying immediately just adds to the
+  same pattern that likely triggered it. If it keeps happening even after
+  a real cooldown, the number or this host's IP range may need a longer
+  break, or a different network path (see the maintainer if you hit this).
 - **`session logged out` and it stops retrying** → this one *is* final —
   it only fires after a session that was previously fully linked
   (`registered`) gets logged out from the phone side (e.g. you removed the

@@ -51,6 +51,17 @@ let readyPromise = new Promise((resolve) => {
 let lastPairingCodeAt = 0;
 const PAIRING_CODE_MIN_INTERVAL_MS = 55_000;
 
+// Safety cap: if the connection can't stay up long enough to ever finish
+// pairing, retrying forever just means retrying forever *against
+// WhatsApp's real servers*, unsupervised, which is exactly the kind of
+// automated-looking pattern that risks getting the number flagged — the
+// opposite of "low volume." After this many consecutive failures while
+// still unregistered, give up and require a manual restart (a real
+// person deciding "try again now") rather than looping indefinitely.
+let consecutiveUnregisteredFailures = 0;
+const MAX_UNREGISTERED_FAILURES = 15;
+let gaveUp = false;
+
 function resetReadyGate() {
   readyPromise = new Promise((resolve) => {
     readyResolve = resolve;
@@ -65,6 +76,11 @@ export async function startWhatsApp() {
     version,
     auth: state,
     logger,
+    // Tighter than Baileys' 30s default — a shorter ping-pong interval
+    // detects a dead/dropped connection sooner and can help connection
+    // stability on some cloud network paths (a real, if unproven, factor
+    // in the fast repeated disconnects seen while pairing on Railway).
+    keepAliveIntervalMs: 10_000,
     // No printQRInTerminal — deliberately not using QR login at all now.
     // The `qr` field is still handled defensively below (harmless no-op
     // if it never fires), but the primary login path is the pairing code
@@ -85,6 +101,7 @@ export async function startWhatsApp() {
 
     if (connection === "open") {
       console.log("[whatsapp] connected");
+      consecutiveUnregisteredFailures = 0;
       readyResolve();
     }
 
@@ -109,17 +126,35 @@ export async function startWhatsApp() {
         return;
       }
 
-      console.warn("[whatsapp] connection closed, reconnecting...", statusCode ?? "");
-      // A short delay before reconnecting — mainly relevant while still
-      // mid-pairing, where the server can close the connection almost
-      // immediately; reconnecting in a tight loop would hammer WhatsApp's
-      // servers, exactly the automated-looking pattern this project's own
-      // "keep it low-volume" warning is about.
+      if (!wasRegistered) {
+        consecutiveUnregisteredFailures += 1;
+        if (consecutiveUnregisteredFailures >= MAX_UNREGISTERED_FAILURES) {
+          gaveUp = true;
+          console.error(
+            `[whatsapp] gave up after ${MAX_UNREGISTERED_FAILURES} consecutive failed connection attempts without ever pairing. ` +
+              "Not retrying further — this looks like more than normal pairing-handshake flakiness (possibly WhatsApp rate-limiting " +
+              "this number/host after repeated attempts). Stop this service, wait several hours, then manually restart to try again. " +
+              "See whatsapp-notifier/README.md's Troubleshooting section."
+          );
+          return;
+        }
+      }
+
+      console.warn(
+        `[whatsapp] connection closed, reconnecting... ${statusCode ?? ""} (attempt ${consecutiveUnregisteredFailures}/${MAX_UNREGISTERED_FAILURES})`
+      );
+      // Deliberately not fast: reconnecting in a tight loop both hammers
+      // WhatsApp's servers (exactly the automated-looking pattern this
+      // project's own "keep it low-volume" warning is about) and — since
+      // each reconnect briefly interrupts the socket — may itself be
+      // working against a clean pairing handshake completing. 8s trades a
+      // slightly longer gap for a calmer, more stable-looking connection
+      // pattern while a pairing code is outstanding.
       setTimeout(() => {
         startWhatsApp().catch((err) =>
           console.error("[whatsapp] reconnect failed:", err)
         );
-      }, 3000);
+      }, 8000);
     }
   });
 
@@ -159,10 +194,13 @@ async function requestPairingCodeWithRetry(sock, ownerNumber, attempt = 1) {
   try {
     const code = await sock.requestPairingCode(digitsOnly(ownerNumber));
     console.log("\n==================================================");
+    console.log(" TIP: get your phone to the entry screen BEFORE you");
+    console.log(" refresh this log — WhatsApp only gives you ~60s per");
+    console.log(" code. WhatsApp -> Settings -> Linked Devices -> Link");
+    console.log(" a Device -> \"Link with phone number instead\" -- have");
+    console.log(" that screen open and ready, THEN check the code below.");
     console.log(` [whatsapp] PAIRING CODE: ${code}`);
-    console.log(" On your phone: WhatsApp -> Settings -> Linked Devices");
-    console.log(" -> Link a Device -> \"Link with phone number instead\"");
-    console.log(" Enter this code within about 60 seconds.");
+    console.log(" Enter it now.");
     console.log("==================================================\n");
   } catch (err) {
     if (attempt >= 3) {
@@ -198,7 +236,17 @@ export async function sendOrderMessage(text) {
   }
 
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("WhatsApp socket not ready (timed out after 20s)")), 20_000)
+    setTimeout(
+      () =>
+        reject(
+          new Error(
+            gaveUp
+              ? "WhatsApp connection gave up after repeated failures — the service needs a manual restart, see its logs"
+              : "WhatsApp socket not ready (timed out after 20s)"
+          )
+        ),
+      20_000
+    )
   );
   await Promise.race([readyPromise, timeout]);
 
