@@ -2,6 +2,7 @@ import { ArrowLeft, PackagePlus, ScanBarcode } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PushNotificationsButton } from "@/components/admin/push-notifications-button";
 import { PwaRegister } from "@/components/admin/pwa-register";
 import { AdminTopNav } from "@/components/admin/top-nav";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export default async function AdminLayout({
           </div>
 
           <div className="flex items-center gap-2">
+            <PushNotificationsButton />
             <PwaRegister />
             <Link href="/admin/products/new">
               <Button type="button" size="sm">

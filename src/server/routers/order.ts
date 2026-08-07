@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { notifyOwnerOfOrder } from "@/lib/notify-order";
 import { getPaymentProvider } from "@/lib/payments";
+import { notifyAdminsOfOrder } from "@/lib/push-notify";
 import { effectiveUnitPrice } from "@/lib/pricing";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
 
@@ -139,27 +139,11 @@ export const orderRouter = router({
         return createdOrder;
       });
 
-      const customer = await ctx.prisma.user.findUnique({
-        where: { id: ctx.session.user.id },
-        select: { phone: true },
-      });
-      notifyOwnerOfOrder({
+      notifyAdminsOfOrder({
         orderId: order.id,
         customerName: input.shippingName,
-        customerPhone: customer?.phone,
-        items: cart.items.map((item) => ({
-          name: item.variant.product.name,
-          size: item.variant.size,
-          quantity: item.quantity,
-          unitPrice: effectiveUnitPrice(item.variant),
-        })),
         total: Number(order.total),
-        address: {
-          line1: input.shippingAddress,
-          city: input.shippingCity,
-          postalCode: input.shippingPostalCode,
-          country: input.shippingCountry,
-        },
+        itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
       });
 
       const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";

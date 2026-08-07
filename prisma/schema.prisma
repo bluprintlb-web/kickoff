@@ -39,13 +39,30 @@ model User {
   firebaseUid   String?   @unique
   role          Role      @default(CUSTOMER)
 
-  accounts Account[]
-  sessions Session[]
-  orders   Order[]
-  cart     Cart?
+  accounts           Account[]
+  sessions           Session[]
+  orders             Order[]
+  cart               Cart?
+  pushSubscriptions  PushSubscription[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// One row per browser/device the admin has enabled push notifications on
+// (Web Push subscriptions aren't portable across browsers/devices, so the
+// same admin can — and for phone + laptop, will — hold several). Only
+// ADMIN users are ever expected to have rows here (see push-subscription
+// router), but this isn't DB-enforced since role can change.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
