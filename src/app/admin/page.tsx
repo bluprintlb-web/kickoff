@@ -1,5 +1,6 @@
 import { PackagePlus, ScanBarcode } from "lucide-react";
 import Link from "next/link";
+import { OrderAlertsCard } from "@/components/admin/order-alerts-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/stat-card";
@@ -43,6 +44,8 @@ export default async function AdminDashboardPage() {
           }
         />
       </div>
+
+      <OrderAlertsCard />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Link href="/admin/products/new">
