@@ -23,7 +23,15 @@ export default auth((req) => {
   }
 
   if (!req.auth?.user) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+    // The ?admin=1 marker lets /login (shared with customer login) know
+    // this visit came from a gated /admin route, so it can expose the
+    // admin manifest/service worker for PWA installability crawlers (e.g.
+    // PWABuilder) that hit /admin without a session and land here instead
+    // — see src/app/(storefront)/login/page.tsx. Only set on this redirect
+    // path, never on a plain customer visit to /login.
+    const loginUrl = new URL("/login", req.nextUrl);
+    loginUrl.searchParams.set("admin", "1");
+    return NextResponse.redirect(loginUrl);
   }
   if (req.auth.user.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", req.nextUrl));
