@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Package, ScanBarcode, User } from "lucide-react";
+import { LayoutDashboard, Package, Receipt, ScanBarcode, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/products", label: "Products", icon: Package, exact: false },
+  { href: "/admin/orders", label: "Orders", icon: Receipt, exact: false },
   { href: "/admin/pos", label: "Sell (POS)", icon: ScanBarcode, exact: false },
   { href: "/admin/profile", label: "Profile", icon: User, exact: false },
 ] as const;

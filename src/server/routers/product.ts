@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
+import { SOLD_ORDER_STATUSES } from "@/lib/order-status";
 import { AGE_GROUPS, PRODUCT_CATEGORIES } from "@/lib/product-category";
 import { adminProcedure, publicProcedure, router } from "@/server/trpc";
 
@@ -17,10 +18,6 @@ const variantInput = z.object({
 const variantUpdateInput = variantInput.extend({
   id: z.string().optional(),
 });
-
-// "Sold" counts orders that actually went through — not ones still pending
-// payment or that were cancelled.
-const SOLD_ORDER_STATUSES = ["PAID", "SHIPPED", "DELIVERED"] as const;
 
 // costPrice is deliberately omitted from every query below except the two
 // PIN-gated reveal procedures at the bottom of this router — it's never
