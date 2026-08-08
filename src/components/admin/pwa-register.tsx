@@ -49,13 +49,14 @@ export function PwaRegister({ className }: { className?: string }) {
       variant="outline"
       size="sm"
       className={className}
+      title="Install app"
       onClick={async () => {
         await installPrompt.prompt();
         setInstallPrompt(null);
       }}
     >
       <Download className="size-3.5" />
-      Install app
+      <span className="hidden sm:inline">Install app</span>
     </Button>
   );
 }

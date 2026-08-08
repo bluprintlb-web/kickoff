@@ -19,7 +19,7 @@ export function PushNotificationsButton() {
         title="Notifications are blocked for this site in your browser settings — re-enable them there, then reload."
       >
         <BellOff className="size-3.5" />
-        Notifications blocked
+        <span className="hidden sm:inline">Notifications blocked</span>
       </Button>
     );
   }
@@ -32,9 +32,10 @@ export function PushNotificationsButton() {
         size="sm"
         onClick={disable}
         disabled={isPending}
+        title="Order notifications are on for this device — tap to turn off"
       >
         <BellRing className="size-3.5" />
-        Notifications on
+        <span className="hidden sm:inline">Notifications on</span>
       </Button>
     );
   }
@@ -46,9 +47,10 @@ export function PushNotificationsButton() {
       size="sm"
       onClick={enable}
       disabled={isPending}
+      title="Enable order alerts"
     >
       <Bell className="size-3.5" />
-      Enable order alerts
+      <span className="hidden sm:inline">Enable order alerts</span>
     </Button>
   );
 }

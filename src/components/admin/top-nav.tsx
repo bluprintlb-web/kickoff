@@ -24,7 +24,7 @@ export function AdminTopNav() {
             key={href}
             href={href}
             className={cn(
-              "flex items-center gap-2 border-b-2 px-3 py-4 text-sm font-medium transition-all duration-200",
+              "flex shrink-0 items-center gap-2 border-b-2 px-2.5 py-4 text-sm font-medium whitespace-nowrap transition-all duration-200 sm:px-3",
               active
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:-translate-y-0.5 hover:border-border hover:text-foreground"

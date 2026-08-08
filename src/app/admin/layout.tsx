@@ -36,7 +36,7 @@ export default async function AdminLayout({
     // palette, so no per-component changes are needed here.
     <div className="dark flex min-h-full flex-1 flex-col bg-background text-foreground">
       <header className="border-b border-border">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-black p-1">
               <Image
@@ -49,25 +49,25 @@ export default async function AdminLayout({
             </div>
             <div>
               <p className="text-sm leading-tight font-semibold">Kick Off</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="hidden text-xs text-muted-foreground sm:block">
                 Admin · Inventory · Sales · Stock
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <PushNotificationsButton />
             <PwaRegister />
             <Link href="/admin/products/new">
-              <Button type="button" size="sm">
+              <Button type="button" size="sm" title="Scan to add product">
                 <PackagePlus className="size-4" />
-                Scan to add
+                <span className="hidden sm:inline">Scan to add</span>
               </Button>
             </Link>
             <Link href="/admin/pos">
-              <Button type="button" size="sm">
+              <Button type="button" size="sm" title="Scan to sell (POS)">
                 <ScanBarcode className="size-4" />
-                Scan to sell
+                <span className="hidden sm:inline">Scan to sell</span>
               </Button>
             </Link>
             <Link
@@ -79,11 +79,11 @@ export default async function AdminLayout({
             </Link>
           </div>
         </div>
-        <div className="mx-auto w-full max-w-7xl overflow-x-auto px-6">
+        <div className="mx-auto w-full max-w-7xl overflow-x-auto px-4 sm:px-6">
           <AdminTopNav />
         </div>
       </header>
-      <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-8">{children}</div>
+      <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">{children}</div>
     </div>
   );
 }
