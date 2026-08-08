@@ -100,7 +100,7 @@ export async function SiteHeader() {
             <Logo />
           </Link>
         </div>
-        <nav className="flex items-center gap-4 text-sm text-surface-brand-foreground/75">
+        <nav className="flex flex-wrap items-center gap-2 text-sm text-surface-brand-foreground/75 sm:gap-4">
           <Link
             href="/products"
             className="hover-underline transition-colors hover:text-accent"
@@ -115,7 +115,7 @@ export async function SiteHeader() {
           <SocialLinks
             variant="circle"
             label={dict.footer.followUs}
-            className="text-surface-brand-foreground/75"
+            className="hidden text-surface-brand-foreground/75 sm:flex"
           />
           <LanguageToggle
             locale={locale}
