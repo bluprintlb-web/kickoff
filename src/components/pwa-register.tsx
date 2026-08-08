@@ -11,6 +11,11 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+// Mounted in both SiteHeader (storefront) and the admin layout header —
+// site-wide now, not admin-only (see src/app/manifest.ts, src/app/sw.js).
+// Whichever one happens to be on screen when the browser fires
+// beforeinstallprompt catches it; harmless for both to listen since a page
+// is always exactly one or the other.
 export function PwaRegister({ className }: { className?: string }) {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(
     null
@@ -18,18 +23,9 @@ export function PwaRegister({ className }: { className?: string }) {
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      // Scope "/admin" (no trailing slash), not "/admin/" — the dashboard's
-      // own URL is the bare "/admin" route, which does NOT satisfy a
-      // "/admin/" scope under strict spec string-prefix matching. The route
-      // handler at src/app/admin/sw.js/route.ts sends a
-      // Service-Worker-Allowed: /admin header to permit this wider scope
-      // (without it, a script at /admin/sw.js can only be granted /admin/
-      // or narrower).
-      navigator.serviceWorker
-        .register("/admin/sw.js", { scope: "/admin" })
-        .catch(() => {
-          // No offline fallback / install prompt this session — not worth surfacing.
-        });
+      navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
+        // No offline fallback / install prompt this session — not worth surfacing.
+      });
     }
 
     function handleBeforeInstallPrompt(event: Event) {

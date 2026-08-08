@@ -1,26 +1,11 @@
 import { ArrowLeft, PackagePlus, ScanBarcode } from "lucide-react";
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PushNotificationsButton } from "@/components/admin/push-notifications-button";
-import { PwaRegister } from "@/components/admin/pwa-register";
 import { AdminTopNav } from "@/components/admin/top-nav";
+import { PwaRegister } from "@/components/pwa-register";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/dal";
-
-// Scopes installability to /admin only — the storefront has no manifest, so
-// it never prompts customers to "install" anything. See
-// src/app/admin/manifest.webmanifest/route.ts for why this is a plain
-// route (not the manifest.ts file convention) and public/admin/sw.js for
-// the service worker PwaRegister registers.
-export const metadata: Metadata = {
-  manifest: "/admin/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    title: "Kick Off Admin",
-    statusBarStyle: "black-translucent",
-  },
-};
 
 export default async function AdminLayout({
   children,

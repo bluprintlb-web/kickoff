@@ -5,6 +5,7 @@ import { AccountMenu } from "@/components/account-menu";
 import { CartMenu } from "@/components/cart-menu";
 import { LanguageToggle } from "@/components/language-toggle";
 import { Logo } from "@/components/logo";
+import { PwaRegister } from "@/components/pwa-register";
 import { SocialLinks } from "@/components/social-icons";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -125,6 +126,7 @@ export async function SiteHeader() {
             locale={locale}
             className="border-white/15 bg-white/5 text-surface-brand-foreground"
           />
+          <PwaRegister className="border-white/15 bg-white/5 text-surface-brand-foreground hover:bg-white/10" />
           {!session?.user && (
             <>
               <Link href="/login">

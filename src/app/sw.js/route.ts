@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server";
 
-// A Route Handler instead of a public/ static file specifically so this can
-// send a Service-Worker-Allowed header — without it, a script served from
-// /admin/sw.js can only ever be granted a scope at or below /admin/ (its own
-// directory), which by strict spec string-prefix matching does NOT cover
-// the bare /admin dashboard route itself (no trailing slash). That gap was
-// the actual cause of navigator.serviceWorker.ready hanging forever on the
-// dashboard specifically (see src/components/admin/use-push-subscription.ts
-// and src/components/admin/pwa-register.tsx, which now registers scope
-// "/admin" to match). Deliberately minimal otherwise: this app's data
-// (stock, orders) changes constantly, so we don't cache pages or API
-// responses — caching stale inventory counts would be actively wrong, not
-// just stale. All this does is (1) satisfy the installability requirement
-// with a real fetch handler and (2) show a friendly offline page instead of
-// the browser's default error when there's no connection at all.
-const SOURCE = `const OFFLINE_URL = "/admin/offline";
-const CACHE_NAME = "kickoff-admin-shell-v2";
+// Root-scoped now (see src/components/pwa-register.tsx, registers scope
+// "/") so the whole site — storefront and admin — is one installable app,
+// not just /admin. Served from /sw.js at the app root, so no
+// Service-Worker-Allowed header is needed: a script's natural max scope is
+// its own directory, and root already is "/". Deliberately minimal: this
+// app's data (stock, orders) changes constantly, so we don't cache pages or
+// API responses — caching stale inventory counts would be actively wrong,
+// not just stale. All this does is (1) satisfy the installability
+// requirement with a real fetch handler and (2) show a friendly offline
+// page instead of the browser's default error when there's no connection
+// at all.
+const SOURCE = `const OFFLINE_URL = "/offline";
+const CACHE_NAME = "kickoff-app-shell-v1";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -35,10 +32,12 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Order push notifications (see src/lib/push-notify.ts, which sends the
-// payload this parses) — this is what lets a notification show up even
-// when no admin tab is open at all, which a plain in-page notification
-// API call could never do.
+// Order push notifications for the admin panel (see src/lib/push-notify.ts,
+// which sends the payload this parses) — this is what lets a notification
+// show up even when no admin tab is open at all, which a plain in-page
+// notification API call could never do. Admin-only in practice (only
+// admins can enable order alerts), but the listener itself lives on the
+// one site-wide service worker rather than a separate admin-only one.
 self.addEventListener("push", (event) => {
   let data = { title: "New order", body: "", url: "/admin" };
   try {
@@ -51,8 +50,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: "/admin/icons/192",
-      badge: "/admin/icons/192",
+      icon: "/icons/192",
+      badge: "/icons/192",
       data: { url: data.url },
       tag: data.orderId ? \`order-\${data.orderId}\` : undefined,
     })
@@ -83,7 +82,6 @@ export function GET() {
     headers: {
       "Content-Type": "application/javascript; charset=utf-8",
       "Cache-Control": "public, max-age=0, must-revalidate",
-      "Service-Worker-Allowed": "/admin",
     },
   });
 }

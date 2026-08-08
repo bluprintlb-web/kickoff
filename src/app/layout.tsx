@@ -22,6 +22,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kick Off",
   description: "Football kits, jerseys, trophies, and gear.",
+  // src/app/manifest.ts (the file-convention route) auto-injects
+  // <link rel="manifest"> site-wide — nothing to set manually here. This
+  // just adds the iOS home-screen install metadata, covering the whole
+  // site (storefront + admin) as one installable app.
+  appleWebApp: {
+    capable: true,
+    title: "Kick Off",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 // Keeps the storefront light-by-default and admin dark-by-default until a
